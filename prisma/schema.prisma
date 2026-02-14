@@ -1,0 +1,60 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite" // Use SQLite for dev/MVP, switch to Postgres for production
+  url      = "file:dev.sqlite"
+}
+
+model Session {
+  id          String    @id
+  shop        String
+  state       String
+  isOnline    Boolean   @default(false)
+  scope       String?
+  expires     DateTime?
+  accessToken String
+  userId      BigInt?
+}
+
+model MerchantSettings {
+  id              Int      @id @default(autoincrement())
+  shop            String   @unique
+  isActive        Boolean  @default(true)
+  minCartValue    Float    @default(0.0)
+  maxUpsellCount  Int      @default(1)
+  updatedAt       DateTime @updatedAt
+  createdAt       DateTime @default(now())
+
+  upsellRules     UpsellRule[]
+}
+
+model UpsellRule {
+  id              Int      @id @default(autoincrement())
+  name            String
+  triggerProductId String  // If this product is in cart
+  offerProductId   String  // Offer this product
+  discountPercent  Float   @default(0.0)
+  isActive         Boolean @default(true)
+  priority         Int     @default(0) // Higher number = higher priority
+  
+  merchantSettings MerchantSettings @relation(fields: [shop], references: [shop])
+  shop             String
+  
+  conversions      ConversionLog[]
+}
+
+model ConversionLog {
+  id              Int      @id @default(autoincrement())
+  orderId         String
+  upsellRuleId    Int
+  revenueGenerated Float
+  currency        String   @default("USD")
+  createdAt       DateTime @default(now())
+  
+  upsellRule      UpsellRule @relation(fields: [upsellRuleId], references: [id])
+}

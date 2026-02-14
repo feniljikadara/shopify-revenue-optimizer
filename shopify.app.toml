@@ -1,0 +1,19 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "SHOPIFY_API_KEY"
+name = "Revenue Optimizer"
+application_url = "https://shopify-revenue-optimizer.fly.dev"
+embedded = true
+
+[webhooks]
+api_version = "2024-04"
+
+[auth]
+redirect_urls = [
+  "https://shopify-revenue-optimizer.fly.dev/auth/callback",
+  "https://shopify-revenue-optimizer.fly.dev/auth/shopify/callback",
+  "https://shopify-revenue-optimizer.fly.dev/api/auth/callback"
+]
+
+[pos]
+embedded = false
